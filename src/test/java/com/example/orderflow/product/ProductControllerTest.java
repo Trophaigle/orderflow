@@ -13,6 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.math.BigDecimal;
 import java.util.Optional;
 
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
@@ -22,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class ProductControllerTest {
 
     @Autowired
-    private MockMvc mockMvc;
+    private MockMvc mockMvc; // Injection de MockMvc, un outil fourni par Spring pour simuler des requêtes HTTP et tester les endpoints REST du contrôleur sans avoir besoin d'un serveur réel.
 
     @MockitoBean // Annotation pour indiquer que ProductService est un bean Mockito, ce qui permet de simuler son comportement dans les tests sans avoir besoin d'une implémentation réelle.
     private ProductService productService;
@@ -71,5 +72,45 @@ class ProductControllerTest {
                 org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/api/products/999")
         )
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void shouldUpdateProductWhenDataIsValid() throws Exception {
+        Product product = new Product(
+                "Clavier",
+                new BigDecimal("79.90"),
+                10
+        );
+
+        when(productService.updateProduct(
+                1L,
+                "Clavier mécanique",
+                new BigDecimal("89.90"),
+                15
+        )).thenReturn(product);
+
+        mockMvc.perform(
+                org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+                        .put("/api/products/1")
+                        .contentType("application/json")
+                        .content("""
+                            {
+                                "name": "Clavier mécanique",
+                                "price": 89.90,
+                                "stock": 15
+                            }
+                            """))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void shouldDeleteProductAndReturnNoContent() throws Exception {
+        mockMvc.perform( // Effectue (simule) une requête HTTP DELETE vers l'endpoint /api/products/1 pour tester la suppression d'un produit existant.
+                org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+                        .delete("/api/products/1")
+        )
+        .andExpect(status().isNoContent()); // Vérifie que la réponse HTTP est un code 204 No Content, ce qui signifie que le produit a été supprimé avec succès et qu'il n'y a pas de contenu à retourner.
+
+        verify(productService).deleteProduct(1L); // Vérifie que la méthode deleteProduct du service a été appelée avec l'identifiant du produit à supprimer, ce qui confirme que le contrôleur a correctement déléguer la suppression au service.
     }
 }

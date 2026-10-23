@@ -13,6 +13,10 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
 // Controller : reçoit les requêtes HTTP et renvoie les réponses.
 @RestController // classe qui expose des endpoints REST HTTP pour gérer les produits, en utilisant ProductService pour la logique métier et ProductRepository pour l'accès aux données.
 @RequestMapping("/api/products") // chemin de base pour tous les endpoints de ce contrôleur, ce qui signifie que toutes les requêtes vers /api/products seront dirigées vers cette classe.
@@ -46,6 +50,25 @@ public class ProductController {
         return productService.getProductById(id) // on ne passe pas direct par le repository pour respecter le principe de séparation des responsabilités et permettre à ProductService de gérer la logique métier (ex: filtrage, tri, etc.) avant de retourner le produit.
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/{id}") // endpoint HTTP PUT pour mettre à jour un produit existant par son identifiant, en utilisant ProductService pour accéder aux données.
+    public Product updateProduct(
+            @PathVariable Long id,
+            @Valid @RequestBody CreateProductRequest request) {
+
+        return productService.updateProduct(
+                id,
+                request.name(),
+                request.price(),
+                request.stock()
+        );
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteProduct(@PathVariable Long id) {
+        productService.deleteProduct(id);
     }
 
     public record CreateProductRequest(

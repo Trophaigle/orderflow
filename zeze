@@ -1,0 +1,37 @@
+[1mdiff --git a/src/main/java/com/example/orderflow/product/Product.java b/src/main/java/com/example/orderflow/product/Product.java[m
+[1mindex ad55c21..210d75b 100644[m
+[1m--- a/src/main/java/com/example/orderflow/product/Product.java[m
+[1m+++ b/src/main/java/com/example/orderflow/product/Product.java[m
+[36m@@ -7,16 +7,16 @@[m [mimport jakarta.persistence.Id;[m
+ [m
+ import java.math.BigDecimal;[m
+ [m
+[31m-@Entity[m
+[32m+[m[32m@Entity // Indique que cette classe est une entité JPA, dans ce cas, elle sera mappée à une table de base de données.[m
+ public class Product {[m
+ [m
+[31m-    @Id[m
+[31m-    @GeneratedValue(strategy = GenerationType.IDENTITY)[m
+[32m+[m[32m    @Id // Indique que l'attribut "id" est la clé primaire de l'entité Product.[m
+[32m+[m[32m    @GeneratedValue(strategy = GenerationType.IDENTITY) // Indique que la valeur de l'attribut "id" sera générée automatiquement par la base de données lors de l'insertion d'un nouvel enregistrement.[m
+     private Long id;[m
+ [m
+     private String name;[m
+ [m
+[31m-    private BigDecimal price;[m
+[32m+[m[32m    private BigDecimal price; // Utilisation de BigDecimal pour représenter les prix afin d'éviter les problèmes d'arrondi liés aux types à virgule flottante.[m
+ [m
+     private int stock;[m
+ [m
+[36m@@ -45,4 +45,10 @@[m [mpublic class Product {[m
+     public int getStock() {[m
+         return stock;[m
+     }[m
+[32m+[m
+[32m+[m[32m    public void updateDetails(String name, BigDecimal price, int stock) {[m
+[32m+[m[32m        this.name = name;[m
+[32m+[m[32m        this.price = price;[m
+[32m+[m[32m        this.stock = stock;[m
+[32m+[m[32m    }[m
+ }[m
+\ No newline at end of file[m

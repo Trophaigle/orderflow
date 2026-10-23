@@ -52,8 +52,8 @@ class ProductControllerTest {
                 10
         );
 
-        when(productRepository.findById(1L))
-                .thenReturn(Optional.of(product)); // Simule le comportement du repository pour retourner un produit spécifique lorsque l'identifiant du produit existe dans la base de données.
+        when(productService.getProductById(1L))
+                .thenReturn(Optional.of(product)); // Simule le comportement du service pour retourner un produit spécifique lorsque l'identifiant du produit existe dans la base de données.
 
         mockMvc.perform(
                 org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/api/products/1")
@@ -64,7 +64,7 @@ class ProductControllerTest {
 
     @Test
     void shouldReturn404WhenProductDoesNotExist() throws Exception {
-        when(productRepository.findById(999L))
+        when(productService.getProductById(999L))
                 .thenReturn(Optional.empty()); // Simule le comportement du repository pour retourner un Optional vide lorsque l'identifiant du produit n'existe pas dans la base de données.
 
         mockMvc.perform(

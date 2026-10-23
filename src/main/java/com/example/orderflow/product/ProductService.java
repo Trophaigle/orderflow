@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 // Service : contient la logique métier.
 @Service // Indique que cette classe est un service Spring (logique metier), ce qui permet à Spring de la détecter et de la gérer comme un bean.
@@ -34,6 +35,9 @@ public class ProductService {
     }
 
     public List<Product> getAllProducts() {
-    return productRepository.findAll();
-}
+        return productRepository.findAll();
+    }
+    public Optional<Product> getProductById(Long id) { 
+        return productRepository.findById(id); // Retourne un Optional<Product> pour gérer le cas où le produit n'existe pas dans la base de données.
+    }
 }

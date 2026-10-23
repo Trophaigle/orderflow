@@ -19,13 +19,10 @@ import jakarta.validation.constraints.NotNull;
 public class ProductController {
 
     private final ProductService productService;
-    private final ProductRepository productRepository;
 
     public ProductController(
-            ProductService productService,
-            ProductRepository productRepository) {
+            ProductService productService) {
         this.productService = productService;
-        this.productRepository = productRepository;
     }
 
     @PostMapping // endpoint HTTP POST pour créer un nouveau produit, en utilisant les données fournies dans le corps de la requête.
@@ -44,11 +41,11 @@ public class ProductController {
         return productService.getAllProducts();
     }
 
-    @GetMapping("/{id}") // endpoint HTTP GET pour récupérer un produit spécifique par son identifiant, en utilisant ProductRepository pour accéder aux données. (ex: /api/products/1)
-    public ResponseEntity<Product> getProductById(@PathVariable Long id) { // @PathVariable: permet de lier la valeur de l'identifiant dans l'URL (ex: /api/products/1) à la variable id de la méthode, ce qui permet de récupérer le produit correspondant à cet identifiant.
-        return productRepository.findById(id) // findById retourne un Optional<Product> (en base de données), ce qui permet de gérer le cas où le produit n'existe pas dans la base de données.
-                .map(ResponseEntity::ok) // si le produit est trouvé, retourne une réponse HTTP 200 OK avec le produit dans le corps de la réponse.
-                .orElseGet(() -> ResponseEntity.notFound().build()); // si le produit n'est pas trouvé, retourne une réponse HTTP 404 Not Found, ce qui indique au client que le produit demandé n'existe pas.
+    @GetMapping("/{id}") // endpoint HTTP GET pour récupérer un produit spécifique par son identifiant, en utilisant ProductService pour accéder aux données.
+    public ResponseEntity<Product> getProductById(@PathVariable Long id) {
+        return productService.getProductById(id) // on ne passe pas direct par le repository pour respecter le principe de séparation des responsabilités et permettre à ProductService de gérer la logique métier (ex: filtrage, tri, etc.) avant de retourner le produit.
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     public record CreateProductRequest(

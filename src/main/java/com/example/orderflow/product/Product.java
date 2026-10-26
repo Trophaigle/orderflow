@@ -51,4 +51,21 @@ public class Product {
         this.price = price;
         this.stock = stock;
     }
+
+    public void decreaseStock(int quantity) {
+        if (quantity <= 0) {
+            throw new IllegalArgumentException(
+                "La quantité doit être positive"
+            );
+        }
+
+        if (stock < quantity) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                org.springframework.http.HttpStatus.CONFLICT,
+                "Stock insuffisant"
+            );
+        }
+
+        stock -= quantity;
+    }
 }
